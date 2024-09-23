@@ -1,0 +1,111 @@
+package AssignmentAKQA;
+
+import java.time.Duration;
+import java.util.List;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import io.github.bonigarcia.wdm.WebDriverManager;
+
+public class BookingAutomationCSSSelector {
+    public static void main(String[] args) {
+        // Set up WebDriver using WebDriverManager
+        WebDriverManager.chromedriver().setup(); // Make sure WebDriverManager is added as a dependency
+        WebDriver driver = new ChromeDriver();
+        driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(40));
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(40));
+
+        try {
+            // Open Booking.com flights page
+            driver.get("https://www.booking.com/flights/index.en-gb.html");
+            driver.manage().window().maximize();
+
+            // Click on 'From' button
+            WebElement fromButton = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//div[@class='SegmentHorizontal-module__destination___paTRj']//button[1]")));
+            fromButton.click();
+
+            // Enter destination (To)
+            WebElement whereToButton = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//span[@class='Text-module__root--variant-body_2___QdAaF Text-module__root--color-neutral_alt___lEfO4']")));
+            whereToButton.click();
+
+            WebElement toInput = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//input[@placeholder='Airport or city']")));
+            toInput.clear();
+            toInput.sendKeys("BOM");
+
+            WebElement firstToOption = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//b[normalize-space()='BOM']")));
+            firstToOption.click();
+
+            // Click on the date button to open the calendar
+            WebElement dateButton = driver.findElement(By.xpath("//button[@placeholder='Depart - Return']"));
+            dateButton.click();
+
+            // Select the Depart month and date
+            String DepartMonth = "October 2024";
+            String DepartDate = "23";
+
+            while (true) {
+                // Check if the correct month is displayed
+                String month = driver.findElement(By.xpath("(//h3[@class='Text-module__root--variant-strong_1___L2d5B Calendar-module__month___ykQ3Z'])[1]")).getText();
+                if (month.equals(DepartMonth)) {
+                    break;
+                } else {
+                    // Click the next arrow (SVG element) to navigate through months
+                    WebElement nextArrow = driver.findElement(By.xpath("//button[contains(@class,'Calendar-module__nav-btn-next')]"));
+                    nextArrow.click();
+                }
+            }
+
+            // Select the correct day for Depart
+            List<WebElement> ele = driver.findElements(By.xpath("(//tbody)[1]//tr//td//span"));
+            for (WebElement element : ele) {
+                String date = element.getText();
+                if (date.equals(DepartDate)) {
+                    // Click the Depart date when found
+                    element.click();
+                    break;
+                }
+            }
+
+            // Select the Return month and date
+            String ReturnMonth = "October 2024";
+            String ReturnDate = "24";
+
+            while (true) {
+                // Check if the correct month is displayed
+                String month = driver.findElement(By.xpath("(//h3[@class='Text-module__root--variant-strong_1___L2d5B Calendar-module__month___ykQ3Z'])[1]")).getText();
+                if (month.equals(ReturnMonth)) {
+                    break;
+                } else {
+                    // Click the next arrow (SVG element) to navigate through months
+                    WebElement nextArrow = driver.findElement(By.xpath("//button[contains(@class,'Calendar-module__nav-btn-next')]"));
+                    nextArrow.click();
+                }
+            }
+
+            // Select the correct day for Return
+            List<WebElement> ele1 = driver.findElements(By.xpath("(//tbody)[1]//tr//td//span"));
+            for (WebElement element1 : ele1) {
+                String date = element1.getText();
+                if (date.equals(ReturnDate)) {
+                    // Click the Return date when found
+                    element1.click();
+                    break;
+                }
+            }
+
+            // Click the 'Search' button to search for flights
+            WebElement searchButton = driver.findElement(By.xpath("//button[span[text()='Search']]"));
+            searchButton.click();
+            Thread.sleep(10000);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            // Close the driver after execution
+            driver.quit();
+        }
+    }
+}
